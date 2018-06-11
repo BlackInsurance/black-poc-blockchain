@@ -1,0 +1,170 @@
+/**
+ * Write your model definitions here
+ */
+
+namespace insure.black.poc
+
+enum UserType {
+  o Broker
+  o AgencyManager
+  o SyndicateManager
+  o Investor
+  o Oracle
+  o ClaimsHandler
+  o PolicyHolder
+  o Regulator
+  o Admin
+}
+
+abstract participant BlackPlatformParticipant identified by participantID {
+  o String participantID
+  o Double balanceBLCK default=0.0
+}
+
+participant PlatformUser extends BlackPlatformParticipant {
+  o UserType type
+}
+
+abstract participant Company extends BlackPlatformParticipant {
+  o String name
+  o DateTime creationDate
+  o DateTime dissolutionDate optional
+  --> PlatformUser manager
+}
+
+participant InsuranceAgency extends Company {
+  o Double policySalesTarget optional
+  o Double policyClaimRainThreshold default=10.0
+  o Boolean autoSettleClaims default=true
+  --> Product productForSale optional
+  --> PlatformUser broker optional
+  --> PlatformUser claimSubmitter optional
+  --> Syndicate policyUnderwriter optional
+} 
+
+participant Syndicate extends Company {
+  o Double fundingTarget
+  --> Obligation fundsBoundToAgency optional
+  --> Obligation[] debtsToInvestors optional
+}
+
+asset Obligation identified by obligationID {
+  o String obligationID
+  o Double amount
+  o DateTime date
+  --> BlackPlatformParticipant obligee
+} 
+
+asset Product identified by productID {
+  o String productID
+  o String name
+  o String description default="Insurance Product listed on the Black Platform"
+  o String productDetailURL default="https://wwww.black.insure/"
+  --> PlatformUser creator
+}
+
+asset Policy identified by policyID {
+  o String policyID
+  o DateTime createDate
+  o DateTime startDate  
+  o DateTime endDate default="2018-08-01T00:00:00"
+  o DateTime lastClaimDate optional
+  o String coveredCity
+  o Double latitude
+  o Double longitude
+  --> Product product
+  --> PlatformUser issuingBroker
+  --> PlatformUser policyHolder
+  --> Claim[] claims optional
+}
+
+asset Claim identified by claimID {
+  o String claimID
+  o DateTime claimDate
+  o Double rainLast24Hours default=0.0
+  o Double cloudsLast24Hours default=0.0
+  o Double highTempLast24Hours default=0.0
+  o Double highWaveLast24Hours default=0.0
+  --> Payment settlement optional
+}
+
+asset Payment identified by paymentID {
+  o String paymentID
+  o Double amount
+  o DateTime date
+  o Boolean approved default=true
+  --> BlackPlatformParticipant from
+  --> BlackPlatformParticipant to
+}
+
+
+
+
+transaction InvestInSyndicate {
+  o Double investmentAmount
+  --> PlatformUser investor
+  --> Syndicate syndicate
+}
+
+transaction UnderwritePolicies {
+  o Double underwritingAmount
+  --> Syndicate syndicate
+  --> InsuranceAgency agency
+}
+
+transaction IssueNewPolicy {
+  o DateTime startDate
+  o DateTime endDate default="2018-08-01T00:00:00"
+  o String coveredCity
+  o Double latitude
+  o Double longitude
+  o String policyID
+  o String productID default="RAINY_DAY_INSURANCE"
+  o String policyHolderID
+}
+
+event NewPolicyIssued {
+  o String policyID
+  o String policyHolderID
+}
+
+transaction SubmitClaim {
+  o String policyID
+  o Double rainLast24Hours default=0.0
+  o Double cloudsLast24Hours default=0.0
+  o Double highTempLast24Hours default=0.0
+  o Double highWaveLast24Hours default=0.0
+}
+
+event ClaimSubmitted {
+  o String policyID
+  o String claimID
+  o DateTime claimDate
+  o Double rainLast24Hours
+  o Double cloudsLast24Hours
+  o Double highTempLast24Hours
+  o Double highWaveLast24Hours
+  o String settlementPaymentID
+  o Double amount
+  o DateTime settlementDate
+  o Boolean approved
+  o String paidFrom
+  o String paidTo
+}
+
+transaction SettleClaim {
+  o String policyID
+  o String claimID
+  o String settlementPaymentID
+  o String policyHolderID
+  o String policyUnderwriterID
+}
+
+event ClaimSettled {
+  o String policyID
+  o String claimID
+  o String settlementPaymentID
+  o DateTime settlementDate
+  o Boolean approved
+}
+

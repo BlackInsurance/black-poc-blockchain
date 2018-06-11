@@ -1,0 +1,13 @@
+query PoliciesNeedingWeatherCheck {
+	description: "Find all Policies that need a Weather Check"
+	statement:
+  		SELECT insure.black.poc.Policy
+}
+
+
+query InsuranceAgencyByID {
+	description: "Retrieve the Insurance Agency by its ID"
+	statement:
+  		SELECT insure.black.poc.InsuranceAgency
+      WHERE (participantID == _$insuranceAgencyID)
+}

@@ -1,0 +1,22 @@
+{
+  "name": "black-poc",
+  "version": "0.0.2",
+  "description": "Insurance Game created by Black Insurance to demonstrate major components of our Platform",
+  "scripts": {
+    "test": "mocha --recursive"
+  },
+  "author": "Black Insurance",
+  "email": "poc@black.insure",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "composer-admin": "v0.16.6",
+    "composer-client": "v0.16.6",
+    "composer-common": "v0.16.6",
+    "composer-connector-embedded": "v0.16.6",
+    "chai": "latest",
+    "eslint": "latest",
+    "istanbul": "latest",
+    "mkdirp": "latest",
+    "mocha": "latest"
+  }
+}
