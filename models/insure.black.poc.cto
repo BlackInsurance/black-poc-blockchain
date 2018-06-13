@@ -27,8 +27,8 @@ participant PlatformUser extends BlackPlatformParticipant {
 
 abstract participant Company extends BlackPlatformParticipant {
   o String name
-  o DateTime creationDate
-  o DateTime dissolutionDate optional
+  o String creationDateISOString
+  o String dissolutionDateISOString optional
   --> PlatformUser manager
 }
 
@@ -51,7 +51,7 @@ participant Syndicate extends Company {
 asset Obligation identified by obligationID {
   o String obligationID
   o Double amount
-  o DateTime date
+  o String dateISOString
   --> BlackPlatformParticipant obligee
 } 
 
@@ -65,10 +65,10 @@ asset Product identified by productID {
 
 asset Policy identified by policyID {
   o String policyID
-  o DateTime createDate
-  o DateTime startDate  
-  o DateTime endDate default="2018-08-01T00:00:00"
-  o DateTime lastClaimDate optional
+  o String createDateISOString
+  o String startDateISOString  
+  o String endDateISOString default="2018-10-01T00:00:00Z"
+  o String lastClaimDateISOString optional
   o String coveredCity
   o Double latitude
   o Double longitude
@@ -80,7 +80,7 @@ asset Policy identified by policyID {
 
 asset Claim identified by claimID {
   o String claimID
-  o DateTime claimDate
+  o String claimDateISOString
   o Double rainLast24Hours default=0.0
   o Double cloudsLast24Hours default=0.0
   o Double highTempLast24Hours default=0.0
@@ -91,7 +91,7 @@ asset Claim identified by claimID {
 asset Payment identified by paymentID {
   o String paymentID
   o Double amount
-  o DateTime date
+  o String dateISOString
   o Boolean approved default=true
   --> BlackPlatformParticipant from
   --> BlackPlatformParticipant to
@@ -113,8 +113,8 @@ transaction UnderwritePolicies {
 }
 
 transaction IssueNewPolicy {
-  o DateTime startDate
-  o DateTime endDate default="2018-08-01T00:00:00"
+  o String startDateISOString
+  o String endDateISOString default="2018-10-01T00:00:00Z"
   o String coveredCity
   o Double latitude
   o Double longitude
@@ -139,14 +139,14 @@ transaction SubmitClaim {
 event ClaimSubmitted {
   o String policyID
   o String claimID
-  o DateTime claimDate
+  o String claimDateISOString
   o Double rainLast24Hours
   o Double cloudsLast24Hours
   o Double highTempLast24Hours
   o Double highWaveLast24Hours
   o String settlementPaymentID
   o Double amount
-  o DateTime settlementDate
+  o String settlementDateISOString
   o Boolean approved
   o String paidFrom
   o String paidTo
@@ -164,7 +164,7 @@ event ClaimSettled {
   o String policyID
   o String claimID
   o String settlementPaymentID
-  o DateTime settlementDate
+  o String settlementDateISOString
   o Boolean approved
 }
 

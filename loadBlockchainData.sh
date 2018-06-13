@@ -11,7 +11,7 @@ NETWORK_ADMIN_CARD_PATH="$ORIGINAL_PATH/keys/networkadmin.card"
 INSTALLER_CARD="PeerAdmin@hlfv1"
 
 PLATFORM_LAUNCHED_DATE=$(date --utc +%FT%TZ)
-PLATFORM_SHUTDOWN_DATE="2018-08-01T00:00:00Z"
+PLATFORM_SHUTDOWN_DATE="2018-10-01T00:00:00Z"
 BLACK_INSURANCE_AGENCY_ID="BLACK_INSURANCE"
 BLACK_INSURANCE_AGENCY_NAME="Black Insurance"
 BLACK_INSURANCE_MANAGER_ID="BLACK_INSURANCE_MANAGER"
@@ -125,8 +125,8 @@ SYNDICATE_1_PARTICIPANT=$(cat <<END_OF_S1P
 {"\$class":"insure.black.poc.Syndicate",
     "name":"$SYNDICATE_1_NAME",
     "participantID":"$SYNDICATE_1_ID",
-    "creationDate":"$PLATFORM_LAUNCHED_DATE",
-    "dissolutionDate":"$PLATFORM_SHUTDOWN_DATE",
+    "creationDateISOString":"$PLATFORM_LAUNCHED_DATE",
+    "dissolutionDateISOString":"$PLATFORM_SHUTDOWN_DATE",
     "manager":"resource:insure.black.poc.PlatformUser#$SYNDICATE_1_MANAGER_ID",
     "claimSubmitter":"resource:insure.black.poc.PlatformUser#$RAIN_ORACLE_ID",
     "balanceBLCK":0,
@@ -171,11 +171,11 @@ BLACK_INSURANCE_AGENCY_PARTICIPANT=$(cat <<END_OF_BIAP
 {"\$class":"insure.black.poc.InsuranceAgency",
     "name":"$BLACK_INSURANCE_AGENCY_NAME",
     "participantID":"$BLACK_INSURANCE_AGENCY_ID",
-    "creationDate":"$PLATFORM_LAUNCHED_DATE",
-    "dissolutionDate":"$PLATFORM_SHUTDOWN_DATE",
+    "creationDateISOString":"$PLATFORM_LAUNCHED_DATE",
+    "dissolutionDateISOString":"$PLATFORM_SHUTDOWN_DATE",
     "policySalesTarget":2000000,
-    "policyClaimRainThreshold":10,
-    "autoSettleClaims": true,
+    "policyClaimRainThreshold":$RAIN_THRESHOLD_FOR_AUTOCLAIM,
+    "autoSettleClaims": false,
     "productForSale": "resource:insure.black.poc.Product#$RAINY_DAY_INSURANCE_ID",
     "manager":"resource:insure.black.poc.PlatformUser#$BLACK_INSURANCE_MANAGER_ID",
     "broker":"resource:insure.black.poc.PlatformUser#$BROKER_ID",
@@ -194,4 +194,9 @@ SYNDICATE_UNDERWRITES_POLICIES_TRANSACTION=$(cat <<END_OF_SUPT
 END_OF_SUPT
 )
 composer transaction submit --card "$SYNDICATE_1_MANAGER_CARD" -d "$SYNDICATE_UNDERWRITES_POLICIES_TRANSACTION"
-#END
+
+
+# Activate the RainOracle and Broker cards
+composer network ping --card $RAIN_ORACLE_CARD
+composer network ping --card $BROKER_CARD
+
